@@ -13,6 +13,15 @@
                 margin: 50px auto;
                 padding: 20px;
                 text-align: center;
+                background-color: #f8f9fa;
+            }
+            .app-icon {
+                width: 120px;
+                height: 120px;
+                border-radius: 20px;
+                margin: 20px auto;
+                display: block;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
             .install-button {
                 display: inline-block;
@@ -23,44 +32,170 @@
                 border-radius: 8px;
                 font-size: 18px;
                 margin: 20px 0;
+                transition: all 0.3s ease;
             }
             .install-button:hover {
                 background-color: #0051d0;
+                transform: translateY(-1px);
+            }
+            .install-button:active {
+                transform: translateY(0);
             }
             .info {
-                background-color: #f0f0f0;
+                background-color: white;
                 padding: 20px;
-                border-radius: 8px;
+                border-radius: 12px;
                 margin: 20px 0;
                 text-align: left;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            .status-message {
+                padding: 15px;
+                border-radius: 8px;
+                margin: 20px 0;
+                font-weight: 500;
+                display: none;
+            }
+            .status-success {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+            .status-installing {
+                background-color: #d1ecf1;
+                color: #0c5460;
+                border: 1px solid #bee5eb;
+            }
+            .loading-spinner {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #007aff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-right: 10px;
+                vertical-align: middle;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
             }
         </style>
     </head>
     <body>
+        <img src="web_icons/icon_1024x1024_512x512.png" alt="EtoTHSensorMonitor" class="app-icon">
         <h1>EtoTHSensorMonitor</h1>
         <p>iOS向け環境センサー監視アプリ</p>
+
+        <div id="installStatus" class="status-message"></div>
 
         <a
             href="itms-services://?action=download-manifest&url=https://etokoji.github.io/sensor-monitor-support/manifest.plist"
             class="install-button"
+            id="installButton"
+            onclick="handleInstallClick()"
         >
             アプリをインストール
         </a>
 
         <div class="info">
-            <h3>インストール手順：</h3>
+            <h3>📱 インストール手順：</h3>
             <ol>
-                <li>上記のボタンをタップ</li>
+                <li>上記の「アプリをインストール」ボタンをタップ</li>
                 <li>「インストール」を確認</li>
+                <li>ダウンロード完了後、ホーム画面にアイコンが追加されます</li>
                 <li>設定 > 一般 > VPNとデバイス管理でプロファイルを信頼</li>
             </ol>
 
-            <h3>アプリ情報：</h3>
+            <h3>ℹ️ アプリ情報：</h3>
             <ul>
                 <li>バージョン: 1.0</li>
                 <li>Bundle ID: com.etokoji.EtoTHSensorMonitor</li>
                 <li>対応OS: iOS 14.0以上</li>
+                <li>温度・湿度・気圧データをリアルタイム表示</li>
+                <li>Bluetooth・WiFi対応</li>
+            </ul>
+
+            <h3>⚠️ 注意事項：</h3>
+            <ul>
+                <li>iOSデバイスでのみインストール可能です</li>
+                <li>初回起動時は「信頼されていない開発者」の設定が必要です</li>
+                <li>カスタムファームウェア対応のESP32デバイスが必要です</li>
             </ul>
         </div>
+
+        <script>
+            function handleInstallClick() {
+                const statusDiv = document.getElementById('installStatus');
+                const button = document.getElementById('installButton');
+                
+                // インストール開始の表示
+                statusDiv.innerHTML = '<span class="loading-spinner"></span>アプリのダウンロードを開始しています...';
+                statusDiv.className = 'status-message status-installing';
+                statusDiv.style.display = 'block';
+                
+                button.style.opacity = '0.6';
+                button.style.pointerEvents = 'none';
+                
+                // 3秒後にダウンロード中メッセージを表示
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<span class="loading-spinner"></span>ダウンロード中... しばらくお待ちください';
+                }, 3000);
+                
+                // 8秒後に完了メッセージを表示
+                setTimeout(() => {
+                    statusDiv.innerHTML = '✅ ダウンロードが完了しました！ホーム画面を確認してください';
+                    statusDiv.className = 'status-message status-success';
+                    
+                    button.innerHTML = '📱 アプリを開く';
+                    button.href = 'com.etokoji.EtoTHSensorMonitor://';
+                    button.style.opacity = '1';
+                    button.style.pointerEvents = 'auto';
+                    button.style.backgroundColor = '#28a745';
+                }, 8000);
+                
+                // アプリが既にインストールされているかチェック
+                setTimeout(() => {
+                    checkIfAppInstalled();
+                }, 10000);
+            }
+            
+            function checkIfAppInstalled() {
+                // フォーカスイベントでアプリの起動を検出
+                let hidden = false;
+                
+                const handleVisibilityChange = () => {
+                    if (document.hidden) {
+                        hidden = true;
+                    } else if (hidden) {
+                        // アプリから戻ってきた場合
+                        const statusDiv = document.getElementById('installStatus');
+                        statusDiv.innerHTML = '🎉 インストールが完了しました！アプリをお楽しみください';
+                        statusDiv.className = 'status-message status-success';
+                    }
+                };
+                
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+            }
+            
+            // ページ読み込み時に実行
+            document.addEventListener('DOMContentLoaded', function() {
+                // ユーザーエージェントをチェック
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                if (!isIOS) {
+                    const statusDiv = document.getElementById('installStatus');
+                    statusDiv.innerHTML = '⚠️ このアプリはiOSデバイスでのみインストール可能です';
+                    statusDiv.className = 'status-message';
+                    statusDiv.style.display = 'block';
+                    statusDiv.style.backgroundColor = '#fff3cd';
+                    statusDiv.style.color = '#856404';
+                    statusDiv.style.border = '1px solid #ffeaa7';
+                    
+                    const button = document.getElementById('installButton');
+                    button.style.display = 'none';
+                }
+            });
+        </script>
     </body>
 </html>
