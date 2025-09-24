@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EtoTHSensorMonitor インストール</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .install-button {
+            display: inline-block;
+            background-color: #007AFF;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .install-button:hover {
+            background-color: #0051D0;
+        }
+        .info {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>EtoTHSensorMonitor</h1>
+    <p>iOS向け環境センサー監視アプリ</p>
+    
+    <a href="itms-services://?action=download-manifest&url=https://your-server.com/path/manifest.plist" class="install-button">
+        アプリをインストール
+    </a>
+    
+    <div class="info">
+        <h3>インストール手順：</h3>
+        <ol>
+            <li>上記のボタンをタップ</li>
+            <li>「インストール」を確認</li>
+            <li>設定 > 一般 > VPNとデバイス管理でプロファイルを信頼</li>
+        </ol>
+        
+        <h3>アプリ情報：</h3>
+        <ul>
+            <li>バージョン: 1.0</li>
+            <li>Bundle ID: com.etokoji.EtoTHSensorMonitor</li>
+            <li>対応OS: iOS 14.0以上</li>
+        </ul>
+    </div>
+</body>
+</html>
