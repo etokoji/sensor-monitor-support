@@ -103,9 +103,11 @@
             <h3>📱 インストール手順：</h3>
             <ol>
                 <li>上記の「アプリをインストール」ボタンをタップ</li>
-                <li>「インストール」を確認</li>
-                <li>ダウンロード完了後、ホーム画面にアイコンが追加されます</li>
-                <li>設定 > 一般 > VPNとデバイス管理でプロファイルを信頼</li>
+                <li>「インストール」をタップして確認</li>
+                <li>ダウンロード完了を待つ（数分かかる場合があります）</li>
+                <li>ホーム画面にアプリアイコンが表示されたらタップ</li>
+                <li>初回起動時は「信頼されていない開発者」エラーが出たら：<br>
+                    設定 > 一般 > VPNとデバイス管理 > プロファイルを信頼</li>
             </ol>
 
             <h3>ℹ️ アプリ情報：</h3>
@@ -145,14 +147,15 @@
                 
                 // 8秒後に完了メッセージを表示
                 setTimeout(() => {
-                    statusDiv.innerHTML = '✅ ダウンロードが完了しました！ホーム画面を確認してください';
+                    statusDiv.innerHTML = '✅ ダウンロードが完了しました！<br>📱 ホーム画面でアプリアイコンをタップしてアプリを起動してください';
                     statusDiv.className = 'status-message status-success';
                     
-                    button.innerHTML = '📱 アプリを開く';
-                    button.href = 'etothsensormonitor://';
+                    button.innerHTML = '🔄 再インストール';
+                    button.href = 'itms-services://?action=download-manifest&url=https://etokoji.github.io/sensor-monitor-support/manifest.plist';
                     button.style.opacity = '1';
                     button.style.pointerEvents = 'auto';
-                    button.style.backgroundColor = '#28a745';
+                    button.style.backgroundColor = '#6c757d';
+                    button.onclick = null; // 元のクリックハンドラーを削除
                 }, 8000);
                 
                 // アプリが既にインストールされているかチェック
@@ -171,7 +174,7 @@
                     } else if (hidden) {
                         // アプリから戻ってきた場合
                         const statusDiv = document.getElementById('installStatus');
-                        statusDiv.innerHTML = '🎉 インストールが完了しました！アプリをお楽しみください';
+                        statusDiv.innerHTML = '🎉 アプリが正常に起動しました！インストール完了です。';
                         statusDiv.className = 'status-message status-success';
                     }
                 };
