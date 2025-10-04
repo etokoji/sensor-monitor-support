@@ -81,6 +81,25 @@
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
+            .version-info {
+                background-color: #fff3cd;
+                color: #856404;
+                padding: 15px;
+                border-radius: 8px;
+                margin: 20px 0;
+                border: 1px solid #ffeaa7;
+            }
+            .version-info strong {
+                color: #6f5499;
+            }
+            .update-notice {
+                background-color: #d1ecf1;
+                color: #0c5460;
+                padding: 15px;
+                border-radius: 8px;
+                margin: 20px 0;
+                border: 1px solid #bee5eb;
+            }
             
             /* iPad対応のCSS */
             @media screen and (min-width: 768px) {
@@ -109,33 +128,64 @@
 
         <div id="installStatus" class="status-message"></div>
 
+        <!-- バージョン情報表示 -->
+        <div class="version-info">
+            <p><strong>最新バージョン:</strong> <span id="latestVersion">1.1.0</span></p>
+            <p><span id="updateDate">2025年10月4日</span> リリース</p>
+        </div>
+
         <a
             href="itms-services://?action=download-manifest&url=https://etokoji.github.io/sensor-monitor-support/manifest.plist"
             class="install-button"
             id="installButton"
             onclick="handleInstallClick()"
         >
-            アプリをインストール
+            <span id="buttonText">アプリをインストール / 更新</span>
         </a>
 
         <div class="info">
-            <h3>📱 インストール手順：</h3>
+            <h3>📱 インストール / 更新手順：</h3>
             <ol>
-                <li>上記の「アプリをインストール」ボタンをタップ</li>
-                <li>「インストール」をタップして確認</li>
+                <li>上記の「アプリをインストール / 更新」ボタンをタップ</li>
+                <li>「インストール」または「置き換える」をタップして確認</li>
                 <li>ダウンロード完了を待つ（数分かかる場合があります）</li>
                 <li>ホーム画面にアプリアイコンが表示されたらタップ</li>
-                <li>初回起動時は「信頼されていない開発者」エラーが出たら：<br>
+                <li>初回インストール時は「信頼されていない開発者」エラーが出たら：<br>
                     設定 > 一般 > VPNとデバイス管理 > プロファイルを信頼</li>
             </ol>
+            
+            <div class="update-notice">
+                <h4>🔄 アップデートについて：</h4>
+                <ul>
+                    <li><strong>既存アプリがある場合：</strong> 自動的に最新バージョンで置き換えられます</li>
+                    <li><strong>データ保持：</strong> アプリ内設定とデータは保持されます</li>
+                    <li><strong>バージョン確認：</strong> アプリ起動時に設定画面でバージョンを確認できます</li>
+                </ul>
+            </div>
 
             <h3>ℹ️ アプリ情報：</h3>
             <ul>
-                <li>バージョン: 1.0</li>
-                <li>Bundle ID: com.etokoji.EtoTHSensorMonitor</li>
-                <li>対応OS: iOS 14.0以上</li>
-                <li>温度・湿度・気圧データをリアルタイム表示</li>
-                <li>Bluetooth・WiFi対応</li>
+                <li><strong>最新バージョン:</strong> 1.1.0 (2025年10月4日)</li>
+                <li><strong>Bundle ID:</strong> com.etokoji.EtoTHSensorMonitor</li>
+                <li><strong>対応OS:</strong> iOS 17.0以上</li>
+                <li><strong>主な機能:</strong>
+                    <ul>
+                        <li>温度・湿度・気圧・電圧データのリアルタイム表示</li>
+                        <li>Bluetooth LE通信対応</li>
+                        <li>iPad mini / Mac向けレスポンシブレイアウト</li>
+                        <li>動的フォントサイズ調整</li>
+                        <li>ウィンドウサイズに応じた自動調整（Mac）</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h3>🆕 バージョン 1.1.0 の新機能：</h3>
+            <ul>
+                <li>iPad miniでのレイアウト最適化</li>
+                <li>Macでの動的ウィンドウリサイズ対応</li>
+                <li>計測値の文字サイズを全体的に向上</li>
+                <li>画面サイズに応じた適応型レイアウト</li>
+                <li>SwiftUI Preview機能の改善</li>
             </ul>
 
             <h3>⚠️ 注意事項：</h3>
@@ -150,9 +200,10 @@
             function handleInstallClick() {
                 const statusDiv = document.getElementById('installStatus');
                 const button = document.getElementById('installButton');
+                const buttonText = document.getElementById('buttonText');
                 
-                // インストール開始の表示
-                statusDiv.innerHTML = '<span class="loading-spinner"></span>アプリのダウンロードを開始しています...';
+                // インストール/更新開始の表示
+                statusDiv.innerHTML = '<span class="loading-spinner"></span>アプリのダウンロードを開始しています...<br>（新規インストールまたは既存アプリの更新）';
                 statusDiv.className = 'status-message status-installing';
                 statusDiv.style.display = 'block';
                 
@@ -161,19 +212,19 @@
                 
                 // 3秒後にダウンロード中メッセージを表示
                 setTimeout(() => {
-                    statusDiv.innerHTML = '<span class="loading-spinner"></span>ダウンロード中... しばらくお待ちください';
+                    statusDiv.innerHTML = '<span class="loading-spinner"></span>ダウンロード中... しばらくお待ちください<br>📱 既存アプリがある場合は自動的に更新されます';
                 }, 3000);
                 
                 // 8秒後に完了メッセージを表示
                 setTimeout(() => {
-                    statusDiv.innerHTML = '✅ ダウンロードが完了しました！<br>📱 ホーム画面でアプリアイコンをタップしてアプリを起動してください';
+                    statusDiv.innerHTML = '✅ ダウンロードが完了しました！<br>📱 ホーム画面でアプリアイコンをタップしてアプリを起動してください<br>🔄 既存アプリは最新バージョンに更新されました';
                     statusDiv.className = 'status-message status-success';
                     
-                    button.innerHTML = '🔄 再インストール';
+                    buttonText.innerHTML = '🔄 再実行（再インストール/更新）';
                     button.href = 'itms-services://?action=download-manifest&url=https://etokoji.github.io/sensor-monitor-support/manifest.plist';
                     button.style.opacity = '1';
                     button.style.pointerEvents = 'auto';
-                    button.style.backgroundColor = '#6c757d';
+                    button.style.backgroundColor = '#28a745';
                     button.onclick = null; // 元のクリックハンドラーを削除
                 }, 8000);
                 
@@ -213,7 +264,7 @@
                 console.log('✅ インストールボタンを表示します（userAgentチェック無効）');
                 
                 const statusDiv = document.getElementById('installStatus');
-                statusDiv.innerHTML = '📱 iOS/iPadOSデバイスで「アプリをインストール」ボタンをタップしてください';
+                statusDiv.innerHTML = '📱 iOS/iPadOSデバイスで「アプリをインストール / 更新」ボタンをタップしてください<br>🔄 既にアプリがインストールされている場合は自動的に最新版に更新されます';
                 statusDiv.className = 'status-message';
                 statusDiv.style.display = 'block';
                 statusDiv.style.backgroundColor = '#e7f3ff';
